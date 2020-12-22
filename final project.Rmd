@@ -33,13 +33,26 @@ This report continue exploring CES data to find out if happiness (Feelings_life 
 dataAll<-read.csv("gss.csv",header = TRUE)
 ```
 
+## Methodology
+Code and data is available at:  "https://github.com/Feymann7/STA304-final-project"
+\
 
-##Code and data supporting this analysis is available at:  "https://github.com/Feymann7/STA304-final-project"
+DATA\
+Table 1: all data\
 ```{r,echo=FALSE}
-## clean and get the 10 variables we want
-dataSelected <- dataAll %>% select(age, age_at_first_birth, feelings_life, sex, marital_status, 
-                            education,income_family,average_hours_worked,self_rated_health,
-                            self_rated_mental_health, age_youngest_child_under_6, total_children)%>% 
+## clean and get the 12 variables we want
+dataSelected <- dataAll %>% select(age, 
+                                   age_at_first_birth, 
+                                   feelings_life, 
+                                   sex, 
+                                   marital_status,
+                                   education,
+                                   income_family,
+                                   average_hours_worked,
+                                   self_rated_health,
+                                   self_rated_mental_health,
+                                   age_youngest_child_under_6,
+                                   total_children)%>% 
   # filter out missing data
   filter(!is.na(feelings_life)& feelings_life <= 10 & feelings_life >= 0)%>% 
   filter(!is.na(age)& age >= 0)%>%
@@ -54,7 +67,20 @@ dataSelected <- dataAll %>% select(age, age_at_first_birth, feelings_life, sex, 
   filter(!is.na(age_youngest_child_under_6)& age_youngest_child_under_6 >= 0)%>%
   filter(!is.na(total_children)& total_children >= 0)
 attach(dataSelected)
+head(dataSelected, main = "Table 1: all data")
 ```
+Table 1 characterizes the data I use from CES 2017 data set [2]. The first 6 available cases are include to show as examples. There are 12 interesting variables included in the data, and they are age, 
+                                   age_at_first_birth, 
+                                   feelings_life, 
+                                   sex, 
+                                   marital_status,
+                                   education,
+                                   income_family,
+                                   average_hours_worked,
+                                   self_rated_health,
+                                   self_rated_mental_health,
+                                   age_youngest_child_under_6,
+                                   total_children. Five are numeric variables, age, age_at_first_birth, feelings_life, age_youngest_child_under_6, total_children. The other seven variables are categorical variables. By observing the data of those 12 variables, I find that feelings_life, which is the feeling towards life is quite related to the rest of variables. This triggers me to find if there is a linear relationship between them. Also, the right skewed normal curve of Feeling about life rating histogram below demonstrate feelings_life is not randomly distributedm but might be related to other things. I use Multiple Linear Model to try to find a model for it.\
 
 ```{r,echo=FALSE}
 dataSelected %>% 
@@ -63,69 +89,75 @@ dataSelected %>%
   ggtitle("Feeling about life rating histogram") 
 ```
 
+MODEL\
 
-# Model
-
+For my initial model 1, I run a multiple linear regression through all variables, using feelings_life as the response variable, and age, age_at_first_birth, feelings_life, sex, marital_status, education, income_family, average_hours_worked, self_rated_health, self_rated_mental_health, age_youngest_child_under_6, total_children as the predictors. The p-value for the global F-test is <2.2e-16, and the $R^2 = 0.3187$. This the a rather significant result for such large data set.\
 ```{r,echo=FALSE}
-# from some random variables
-model1 <- lm(feelings_life~self_rated_health+self_rated_mental_health,data=dataSelected)
+#Multiple Regression Model
+model1<-lm(feelings_life ~age_at_first_birth 
+           +age 
+           +sex
+           +marital_status
+           +average_hours_worked
+           +education
+           +income_family
+           +self_rated_health
+           +self_rated_mental_health
+           +age_youngest_child_under_6
+           +total_children,
+           data = dataSelected)
 summary(model1)
 ```
 
-
-```{r,echo=FALSE}
-##Our Multiple Regression Model
-model2<-lm(feelings_life ~age_at_first_birth + age +sex+
-        marital_status+education+income_family+self_rated_health+self_rated_mental_health+
-        age_youngest_child_under_6+ total_children,
-      data = dataSelected)
-summary(model2)
-```
 ```{r,echo=FALSE}
 ##Power transformations
 library(alr4)
 trans <- powerTransform(cbind(age_at_first_birth, age, total_children)~1)
 summary(trans)
-```
 
-Transform variables using Box-Cox transformation
-```{r, echo=FALSE}
 # transformed variables
 tfeelings_life <- log(feelings_life)
 tage <- log(age)
 ttotal_children <- log(total_children)
-model3 <- lm(feelings_life ~ age_at_first_birth + tage +sex+
+model2 <- lm(feelings_life ~ age_at_first_birth + tage +sex+ average_hours_worked+
         marital_status+education+income_family+self_rated_health+self_rated_mental_health+
           age_youngest_child_under_6 + ttotal_children)
-summary(model3)
+summary(model2)
 ```
-The transformed model is not as good as the the original MLR model. So the original model2 is retained.
-I observe the data p-values and find out that although the global F-test is significant for model 3, some individual test fail. For example, the p-value for self_rated_mental_healthPoor is insignificant while other categories for the same variable is significant. Based on this, I create a new model using AIC to solve this./
+However, I try to improve the model by Box-Cox Transformation. After I transform variables using Box-Cox transformation, I find out the $R^2$ is the same as model 1, but model 2 is more complicated in formula. So the original model 1 is retained.
+I observe the data p-values and find out that although the global F-test is significant for model 1, some individual tests fail. For example, the p-value for self_rated_mental_healthPoor is insignificant while other categories for the same variable is significant. Based on this, I create a new model 3 using AIC elimination to solve this.\
 
 ```{r, echo=FALSE}
-back1=step(model2, direction = "backward")
-
+back1=step(model1, direction = "backward")
 ```
-Age is deleted from the linear model.
+
 ```{r, echo=FALSE}
-model4<-lm(feelings_life ~age_at_first_birth  +sex+
+model3<-lm(feelings_life ~age_at_first_birth  +sex+
         marital_status+education+income_family+self_rated_health+self_rated_mental_health+
         age_youngest_child_under_6+ total_children,
       data = dataSelected)
-summary(model4)
+summary(model3)
 ```
+\
+Age is deleted from the linear model. Model 3 is the final model
+
+# Results
+
+# Discussion
 
 # Weaknesses
 ```{r}
 par(mfrow=c(2,2))
-plot(model4)
+plot(model3)
 ```
 
 # References 
 
 [1] Multiple Linear Regression. (2020). Retrieved December 18 2020, from http://www.stat.yale.edu/Courses/1997-98/101/linmult.htm
-[2] General Social Survey (GSS), Cycle 31, 2017: Family. Retrieved December 18 2020, from http://www.chass.utoronto.ca/
-[3] What Makes Canadian Rate Their Feelings of Life. STA304.Yiwen Feng, Yutong Yuan, Sirui Xu, Man Fei, University of Toronto.
+\
+[2] General Social Survey (GSS), Cycle 31, 2017: Family. Retrieved December 18 2020, from http://www.chass.utoronto.ca
+\
+[3] What Makes Canadian Rate Their Feelings of Life. STA304, Winter 2020. Yiwen Feng, Yutong Yuan, Sirui Xu, Man Fei, University of Toronto.\
 
 
 2. 5.3 - The Multiple Linear Regression Model | STAT 462. (2020). Retrieved December 18 2020, from https://online.stat.psu.edu/stat462/node/131/
