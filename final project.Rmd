@@ -1,0 +1,134 @@
+---
+title: "What makes Canadians rate their life: life feeling rating analysis"
+author: "Man Fei, 1002129984"
+date: "2020/12/21"
+output: html_document
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+library("tidyverse")
+library("ggpubr")
+```
+
+
+## Abstract
+
+
+
+
+## Key words
+Feeling life, Rating, Observational Study, Multiple Linear Regression, Satisfaction
+
+## Introduction
+One’s degree of satisfaction towards life is very important for people. It is essential because this greatly determines one's happiness and fulfillment in life. Satisfaction on life can be affected by many things. For example, one's economic standing affect his satisfaction towards life. If one spends more time on trying to make more money, there is less time foe him to spend time on what he likes. Another example could be marital status can affect one's feeling for life. Different marital status gives a person different sense of belonging, loneliness, or freedom etc, and all these feelings can affect people's feeling towards life.\
+
+Multiple Linear Regression can be a good way to find out the correlation between feeling towards life and other aspects in life. It can model correlations between more than two variables, which is suitable for this circumstance [1]. Observational data can be put into MLR model to find out if there is multiple linear relationship [1], and further transformations of data can also be done.\
+
+This report continue exploring CES data to find out if happiness (Feelings_life in CES) for Canadian relates to their financial situation, education level, family situation(marriage, children), mental & physical health, sex, and ages. The data is the dataset from the 2017 Canadian General Social Survey (Cycle 31, Family) [2]. To continue from a less-than-perfect report [3], further exploration is needed on whether there is a multiple linear relationship between Canadians’ Age, Feelings_life, age_at_first_birth, sex, marital_status, education, income_family, self_rated_health, and self_rated_mental_health, adding two more variables age_youngest_child_under_6 and total_children. In addition to the former project [3], a more significant model is built by more complex linear models. Box-Cox transformation, AIC backward elimination are implemented. Results show that some variable (age) is not as significant as others. The final model has a higher $R^2$ compared to former model, making it more significant in predicting life satisfaction feeling.\
+
+
+```{r,echo=FALSE}
+# Raw data from 2017 GSS data in file AAy2jjGy.csv,
+# data cleaning done by gss_cleaning.R to get gss.csv file
+dataAll<-read.csv("gss.csv",header = TRUE)
+```
+
+
+##Code and data supporting this analysis is available at:  "https://github.com/Feymann7/STA304-final-project"
+```{r,echo=FALSE}
+## clean and get the 10 variables we want
+dataSelected <- dataAll %>% select(age, age_at_first_birth, feelings_life, sex, marital_status, 
+                            education,income_family,average_hours_worked,self_rated_health,
+                            self_rated_mental_health, age_youngest_child_under_6, total_children)%>% 
+  # filter out missing data
+  filter(!is.na(feelings_life)& feelings_life <= 10 & feelings_life >= 0)%>% 
+  filter(!is.na(age)& age >= 0)%>%
+  filter(!is.na(age_at_first_birth)& age_at_first_birth >= 0)%>% 
+  filter(!is.na(sex))%>% 
+  filter(!is.na(marital_status))%>% 
+  filter(!is.na(education))%>% 
+  filter(!is.na(income_family))%>% 
+  filter(!is.na(average_hours_worked))%>% 
+  filter(!is.na(self_rated_health))%>% 
+  filter(!is.na(self_rated_mental_health))%>%
+  filter(!is.na(age_youngest_child_under_6)& age_youngest_child_under_6 >= 0)%>%
+  filter(!is.na(total_children)& total_children >= 0)
+attach(dataSelected)
+```
+
+```{r,echo=FALSE}
+dataSelected %>% 
+  ggplot(aes(x =feelings_life)) + 
+  geom_histogram() +
+  ggtitle("Feeling about life rating histogram") 
+```
+
+
+# Model
+
+```{r,echo=FALSE}
+# from some random variables
+model1 <- lm(feelings_life~self_rated_health+self_rated_mental_health,data=dataSelected)
+summary(model1)
+```
+
+
+```{r,echo=FALSE}
+##Our Multiple Regression Model
+model2<-lm(feelings_life ~age_at_first_birth + age +sex+
+        marital_status+education+income_family+self_rated_health+self_rated_mental_health+
+        age_youngest_child_under_6+ total_children,
+      data = dataSelected)
+summary(model2)
+```
+```{r,echo=FALSE}
+##Power transformations
+library(alr4)
+trans <- powerTransform(cbind(age_at_first_birth, age, total_children)~1)
+summary(trans)
+```
+
+Transform variables using Box-Cox transformation
+```{r, echo=FALSE}
+# transformed variables
+tfeelings_life <- log(feelings_life)
+tage <- log(age)
+ttotal_children <- log(total_children)
+model3 <- lm(feelings_life ~ age_at_first_birth + tage +sex+
+        marital_status+education+income_family+self_rated_health+self_rated_mental_health+
+          age_youngest_child_under_6 + ttotal_children)
+summary(model3)
+```
+The transformed model is not as good as the the original MLR model. So the original model2 is retained.
+I observe the data p-values and find out that although the global F-test is significant for model 3, some individual test fail. For example, the p-value for self_rated_mental_healthPoor is insignificant while other categories for the same variable is significant. Based on this, I create a new model using AIC to solve this./
+
+```{r, echo=FALSE}
+back1=step(model2, direction = "backward")
+
+```
+Age is deleted from the linear model.
+```{r, echo=FALSE}
+model4<-lm(feelings_life ~age_at_first_birth  +sex+
+        marital_status+education+income_family+self_rated_health+self_rated_mental_health+
+        age_youngest_child_under_6+ total_children,
+      data = dataSelected)
+summary(model4)
+```
+
+# Weaknesses
+```{r}
+par(mfrow=c(2,2))
+plot(model4)
+```
+
+# References 
+
+[1] Multiple Linear Regression. (2020). Retrieved December 18 2020, from http://www.stat.yale.edu/Courses/1997-98/101/linmult.htm
+[2] General Social Survey (GSS), Cycle 31, 2017: Family. Retrieved December 18 2020, from http://www.chass.utoronto.ca/
+[3] What Makes Canadian Rate Their Feelings of Life. STA304.Yiwen Feng, Yutong Yuan, Sirui Xu, Man Fei, University of Toronto.
+
+
+2. 5.3 - The Multiple Linear Regression Model | STAT 462. (2020). Retrieved December 18 2020, from https://online.stat.psu.edu/stat462/node/131/
+3. gss.csv. (2020, December 21) Author :Rohan Alexander and Sam Caetano
+
+4. Multiple Linear Regression. (2020). Retrieved December 18 2020, from http://www.stat.yale.edu/Courses/1997-98/101/linmult.htm
