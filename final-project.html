@@ -397,7 +397,7 @@ summary {
 </div>
 <div id="methodology" class="section level2">
 <h2>Methodology</h2>
-<p>Code and data is available at: “<a href="https://github.com/Feymann7/STA304-final-project" class="uri">https://github.com/Feymann7/STA304-final-project</a>”<br />
+<p>Code and data supporting this analysis is available at: “<a href="https://github.com/Feymann7/STA304-final-project" class="uri">https://github.com/Feymann7/STA304-final-project</a>”<br />
 </p>
 <p>DATA<br />
 Table 1: all data<br />
@@ -867,7 +867,8 @@ Table 1: all data<br />
 ## Residual standard error: 1.191 on 1655 degrees of freedom
 ## Multiple R-squared:  0.3187, Adjusted R-squared:  0.3039 
 ## F-statistic: 21.51 on 36 and 1655 DF,  p-value: &lt; 2.2e-16</code></pre>
-<p>However, I try to improve the model by Box-Cox Transformation. After I transform variables using Box-Cox transformation, I find out the <span class="math inline">\(R^2\)</span> is the same as model 1, but model 2 is more complicated in formula. So the original model 1 is retained. I observe the data p-values and find out that although the global F-test is significant for model 1, some individual tests fail. For example, the p-value for self_rated_mental_healthPoor is insignificant while other categories for the same variable is significant. Based on this, I create a new model 3 using AIC elimination to solve this./</p>
+<p>However, I try to improve the model by Box-Cox Transformation. After I transform variables using Box-Cox transformation, I find out the <span class="math inline">\(R^2\)</span> is the same as model 1, but model 2 is more complicated in formula. So the original model 1 is retained. I observe the data p-values and find out that although the global F-test is significant for model 1, some individual tests fail. For example, the p-value for self_rated_mental_healthPoor is insignificant while other categories for the same variable is significant. Based on this, I create a new model 3 using AIC elimination to solve this.<br />
+</p>
 <pre><code>## Start:  AIC=629.36
 ## feelings_life ~ age_at_first_birth + age + sex + marital_status + 
 ##     average_hours_worked + education + income_family + self_rated_health + 
@@ -1082,7 +1083,8 @@ Table 1: all data<br />
 ## Multiple R-squared:  0.3098, Adjusted R-squared:  0.2973 
 ## F-statistic: 24.85 on 30 and 1661 DF,  p-value: &lt; 2.2e-16</code></pre>
 <p><br />
-Age is deleted from the linear model. Model 3 is the final model</p>
+After age is deleted from the linear model, Model 3 is the final model. The linear regression of model 3 is <span class="math inline">\(y = \beta_{0} + \beta_{1}x_1 +\beta_{2}x_2 + \beta_{3}x_3 +\beta_{4}x_4 + \beta_{5}x_5 +\beta_{6}x_6 + \beta_{7}x_7 +\beta_{8}x_8 + \beta_{9}x_9\)</span>, where y=feeling_life which is the response variable, <span class="math inline">\(x_1-x_9\)</span> are predictor variables, <span class="math inline">\(x_1\)</span> = age_at_first_birth, <span class="math inline">\(x_2\)</span> = sex, <span class="math inline">\(x_3\)</span> = marital_status, <span class="math inline">\(x_4\)</span> = education, <span class="math inline">\(x_5\)</span> = income_family, <span class="math inline">\(x_6\)</span> = self_rated_health, <span class="math inline">\(x_7\)</span> = self_rated_mental health, <span class="math inline">\(x_8\)</span> = age_youngest_child_under_6, <span class="math inline">\(x_9\)</span> = total_children. The final model 3 is with the smallest AIC and simpliest predictor variable constitutions for response variable feelings_life.<br />
+</p>
 </div>
 <div id="results" class="section level1">
 <h1>Results</h1>
