@@ -11,7 +11,7 @@ library("ggpubr")
 ```
 
 ## Abstract
-It is important to have a good feeling towards one's life. In this report, CES data is used to find out if happiness (Feelings_life in CES) for Canadian relates to their financial situation, education level, family situation(marriage, children), mental & physical health, and sex. The data is from the 2017 Canadian General Social Survey [1]. Multiple linear relationship between Canadians’ Feelings_life, and 10 different predictor variables are the interest for this report. To build more complex linear models, powers, logs and reciprocal transformation and AIC elimination are used to get a final model. Significance of the model is discussed, and in the next steps more methods can be used to get more complete model.
+It is important to have a good feeling towards one's life. In this report, CES data is used to find out if happiness (Feelings_life in CES) for Canadian relates to their financial situation, education level, family situation(marriage, children), mental & physical health, and sex. The data is from the 2017 Canadian General Social Survey [1]. Multiple linear relationship between Canadians’ Feelings_life, and 10 different predictor variables are the interest for this report. To build more complex linear models, powers, logs and reciprocal transformation and AIC elimination are used to get a final model (model 3). Significance of the model is discussed, and in the next steps more methods can be used to get more complete model.
 
 ## Key words
 Feeling life, Rating, Observational Study, Multiple Linear Regression, Satisfaction
@@ -142,10 +142,174 @@ $x_1$ = age_at_first_birth,  $x_2$ = sex, $x_3$ = average_hours_worked, $x_4$ = 
 
 # Results
 
+The final model has intercept and estimated slopes as shown in the following table. The model $y = \beta_{0} + \beta_{1}x_1 +\beta_{2}x_2 + \beta_{3}x_3 +\beta_{4}x_4 + \beta_{5}x_5 +\beta_{6}x_6 + \beta_{7}x_7 +\beta_{8}x_8 + \beta_{9}x_9 + \beta_{10}x_{10}$. 
+$\hat\beta_{0} = 2.856259$, this is our intercept, with p-value 0.143990. Variable age_at_first_birth has slope estimate 
+$\hat\beta_{1} =-0.026223$, with p-value = 0.000113.
+This means with 1 unit increase in age_at_first_birth, holding other variables constant, feeling_life is expected to decrease 0.026223. Categorical variable $\beta_2$ has slope estimate $\beta_{sexMale}$ = -0.219246. This means when sex is female, this term is 0, while when sex is male, the slope estimate is -0.219246. And the p-value is 0.001011< 0.05, which is significant.
+\begin{equation}
+  \hat\beta_{2} =
+    \begin{cases}
+      \beta_{sexMale} = -0.219246 & \text{if sex is male}\\
+      0 & \text{if sex is female}
+    \end{cases}       
+\end{equation}
+Similarly, the estimated slopes for $\beta_{3}$ to $\beta_{10}$ are illustrated as follows, respectively for average_hours_worked, marital_status, education, income_family, self_rated_health, self_rated_mental_health:\
+\begin{equation}
+  \hat\beta_{3} =
+    \begin{cases}
+      \beta_{average_hours_worked0.1 to 29.9 hours} = 1.831046 & \text{if average hours worked is 0.1-29.9 hours}\\
+      \beta_{average_hours_worked30.0 to 40.0 hours} = 1.973047 & \text{if average hours worked is 30-40 hours}\\
+      \beta_{average_hours_worked40.1 to 50.0 hours} = 2.117700  & \text{if average hours worked is 40.1-50 hours}\\
+      \beta_{average_hours_worked50.1 hours and more} = 2.157288 & \text{if average hours worked is 50.1 and more hours}\\
+      \beta_{average_hours_workedDon't know} = 1.343838 & \text{if average hours worked is not known}\\
+      0 & \text{if average hours worked is less than 0.1 hours}
+    \end{cases}       
+\end{equation}
+\begin{equation}
+  \hat\beta_{4} =
+    \begin{cases}
+      \beta_{marital_statusLiving common-law} =  -0.545830 & \text{if marital status is having living common-law partner}\\
+      \beta_{marital_statusMarried} = -0.462328 & \text{if marital status is married}\\
+      \beta_{marital_statusSeparated} = -1.177676  & \text{if marital status is separated}\\
+      \beta_{marital_statusSingle, never married} = -1.096904 & \text{if marital status is single and never married}\\
+      \beta_{marital_statusWidowed} = -0.609398  & \text{if marital status is widowed}\\
+      0 & \text{if marital status is other}
+    \end{cases}       
+\end{equation}
 
+\begin{equation}
+  \hat\beta_{5} =
+    \begin{cases}
+      \beta_{educationCollege, CEGEP or other non-university certificate or diploma} =  0.143529 & \text{if marital status is having living common-law partner}\\
+      \beta_{educationHigh school diploma or a high school equivalency certificate} = 0.193145 & \text{if education level is as stated}\\
+      \beta_{educationLess than high school diploma or its equivalent } = 0.527132  & \text{if education level is as stated}\\
+      \beta_{educationTrade certificate or diploma} = 0.151863  & \text{if education level is as stated}\\
+      \beta_{educationUniversity certificate or diploma below the bachelor's level} = 0.294567 & \text{if education level is as stated}\\
+      \beta_{educationUniversity certificate, diploma or degree above the bachelor} = 0.020526    & \text{if education level is as stated}\\
+      0 & \text{if education level is other}
+    \end{cases}       
+\end{equation}
+
+\begin{equation}
+  \hat\beta_{6} =
+    \begin{cases}
+      \beta_{income_family \$125,000 and more} =  0.199942\\
+      \beta_{income_family \$25,000 to \$49,999} = -0.166061\\
+      \beta_{income_family \$50,000 to $74,999} = 0.042703\\
+      \beta_{income_family \$75,000 to \$99,999} = -0.022085\\
+      \beta_{income_familyLess than \$25,000} = -0.106366\\
+      0 & \text{if other family income is other}
+    \end{cases}       
+\end{equation}
+
+\begin{equation}
+  \hat\beta_{7} =
+    \begin{cases}
+      \beta_{self_rated_healthExcellent} =  1.050221\\
+      \beta_{self_rated_healthFair} = 0.186045 \\
+      \beta_{self_rated_healthGood} = 0.810536\\
+      \beta_{self_rated_healthPoor} = 0.047775\\
+      \beta_{self_rated_healthVery good} =  0.829585 \\
+      0 & \text{if self rated health is other}
+    \end{cases}       
+\end{equation}
+
+\begin{equation}
+  \hat\beta_{8} =
+    \begin{cases}
+      \beta_{self_rated_mental_healthExcellent } =  4.478973\\
+      \beta_{self_rated_mental_healthFair} = 2.406130  \\
+      \beta_{self_rated_mental_healthGood} = 3.387906 \\
+      \beta_{self_rated_mental_healthPoor} = 0.389899\\
+      \beta_{self_rated_mental_healthVery good} =  4.036514 \\
+      0 & \text{if self rated mental health is other}
+    \end{cases}       
+\end{equation}
+And $\hat\beta_{9} =  -0.043339$, which is the estimated slope for age_youngest_child_under_6, with p-value = 0.019520 < 0.05, which is significnat. $\hat\beta_{10} =  0.054027$, which is the estimated slope for total_children, with p-value = 0.102176 > 0.05. All slope estimators and corresponding p-values are listed in the table below.\
+
+```{r, echo=FALSE}
+table_contents = matrix(c("2.856259", "0.143990",
+                          "-0.026223", "0.000113",
+                          "-0.219246", "0.001011",
+                          "1.831046", "0.033246",
+                          "1.973047", "0.021185",
+                          "2.117700", "0.013754",
+                          "2.157288", "0.012314",
+                          "1.343838", "0.127829",
+                          "-0.545830", "0.163181",
+                          "-0.462328", "0.231938",
+                          "-1.177676", "0.006225",
+                          "-1.096904", "0.005958",
+                          "-0.609398", "0.627805",
+                          "0.143529", "0.081830",
+                          "0.193145", "0.046871",
+                          "0.527132", "0.001999",
+                          "0.151863", "0.191237",
+                          "0.294567", "0.056592",
+                          "0.020526", "0.827479",
+                          "0.199942", "0.023360",
+                          "-0.166061", "0.158230",
+                          "0.042703", "0.675807",
+                          "-0.022085", "0.822683",
+                          "-0.106366", "0.545458",
+                          "1.050221", "0.381120",
+                          "0.186045", "0.877529",
+                          "0.810536", "0.498609",
+                          "0.047775", "0.969592",
+                          "0.829585", "0.488721",
+                          "4.478973", "0.000205",
+                          "2.406130", "0.046924",
+                          "3.387906", "0.004880",
+                          "0.389899", "0.754387",
+                          "4.036514", "0.000808",
+                          "-0.043339", "0.019520",
+                          "0.054027", "0.102176"), 
+                        ncol = 2, byrow = TRUE)
+colnames(table_contents) <-c("estimated regression coefficient", "p-value")
+rownames(table_contents) <- c("Intercept",
+                              "age_at_first_birth",
+                              "sexMale",
+                              "average_hours_worked0.1 to 29.9 hours",
+                              "average_hours_worked30.0 to 40.0 hours", 
+                              "average_hours_worked40.1 to 50.0 hours",
+                              "average_hours_worked50.1 hours and more",
+                              "average_hours_workedDon't know",
+                              "marital_statusLiving common-law",
+                              "marital_statusMarried",
+                              "marital_statusSeparated",
+                              "marital_statusSingle, never married",
+                              "marital_statusWidowed",
+                              "educationCollege, CEGEP or other non-university certificate or diploma",
+                              "educationHigh school diploma or a high school equivalency certificate",
+                              "educationLess than high school diploma or its equivalent",
+                              "educationTrade certificate or diploma",
+                              "educationUniversity certificate or diploma below the bachelor's level",
+                              "educationUniversity certificate, diploma or degree above the bachelor",
+                              "income_family$125,000 and more",
+                              "income_family$25,000 to $49,999",
+                              "income_family$50,000 to $74,999",
+                              "income_family$75,000 to $99,999",
+                              "income_familyLess than $25,000",
+                              "self_rated_healthExcellent",
+                              "self_rated_healthFair",
+                              "self_rated_healthGood",
+                              "self_rated_healthPoor",
+                              "self_rated_healthVery good",
+                              "self_rated_mental_healthExcellent",
+                            "self_rated_mental_healthFair",
+                            "self_rated_mental_healthGood",
+                            "self_rated_mental_healthPoor",
+                            "self_rated_mental_healthVery good",
+                            "age_youngest_child_under_6",
+                            "total_children")
+table_9984 <- as.table(table_contents)
+table_9984
+```
+\
 # Discussion
 
 SUMMARY
+
 
 CONCLUSIONS
 
