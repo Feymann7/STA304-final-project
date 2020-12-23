@@ -225,7 +225,7 @@ Similarly, the estimated slopes for $\beta_{3}$ to $\beta_{10}$ are illustrated 
       0 & \text{if self rated mental health is other}
     \end{cases}       
 \end{equation}
-And $\hat\beta_{9} =  -0.043339$, which is the estimated slope for age_youngest_child_under_6, with p-value = 0.019520 < 0.05, which is significnat. $\hat\beta_{10} =  0.054027$, which is the estimated slope for total_children, with p-value = 0.102176 > 0.05. All slope estimators and corresponding p-values are listed in the table below.\
+And $\hat\beta_{9} =  -0.043339$, which is the estimated slope for age_youngest_child_under_6, with p-value = 0.019520 < 0.05, which is significant. $\hat\beta_{10} =  0.054027$, which is the estimated slope for total_children, with p-value = 0.102176 > 0.05. All slope estimators and corresponding p-values are listed in the table below.\
 
 ```{r, echo=FALSE}
 table_contents = matrix(c("2.856259", "0.143990",
