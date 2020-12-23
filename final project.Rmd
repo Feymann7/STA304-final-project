@@ -1,8 +1,11 @@
 ---
-title: "What makes Canadians rate their life: life feeling rating analysis"
+title: 'What makes Canadians rate their life: life feeling rating analysis'
 author: "Man Fei, 1002129984"
 date: "2020/12/21"
-output: html_document
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
 ---
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
@@ -11,7 +14,7 @@ library("ggpubr")
 ```
 
 ## Abstract
-It is important to have a good feeling towards one's life. In this report, CES data is used to find out if happiness (Feelings_life in CES) for Canadian relates to their financial situation, education level, family situation(marriage, children), mental & physical health, and sex. The data is from the 2017 Canadian General Social Survey [1]. Multiple linear relationship between Canadians’ Feelings_life, and 10 different predictor variables are the interest for this report. To build more complex linear models, powers, logs and reciprocal transformation and AIC elimination are used to get a final model (model 3). Significance of the model is discussed, and in the next steps more methods can be used to get more complete model.
+It is important to have a good feeling towards one's life. In this report, GSS data [1] is used to find out if happiness (Feelings_life in GSS) for Canadian relates to their financial situation, education level, family situation(marriage, children), mental & physical health, and sex. The data is from the 2017 Canadian General Social Survey [1]. Multiple linear relationship between Canadians’ Feelings_life, and 10 different predictor variables are the interest for this report. To build more complex linear models, powers, logs and reciprocal transformation and AIC elimination are used to get a final model (model 3). Significance of the model is discussed, and in the next steps more methods can be used to get more complete model.
 
 ## Key words
 Feeling life, Rating, Observational Study, Multiple Linear Regression, Satisfaction
@@ -21,7 +24,7 @@ One’s degree of satisfaction towards life is very important for people. It is 
 
 Multiple Linear Regression can be a good way to find out the correlation between feeling towards life and other aspects in life. It can model correlations between more than two variables, which is suitable for this circumstance [2]. Observational data can be put into MLR model to find out if there is multiple linear relationship [2], and further transformations of data can also be done.\
 
-This report continue exploring CES data to find out if happiness (Feelings_life in CES) for Canadian relates to their financial situation, education level, family situation(marriage, children), mental & physical health, sex, and ages. The data is the dataset from the 2017 Canadian General Social Survey (Cycle 31, Family) [1]. To continue from a less-than-perfect report [3], further exploration is needed on whether there is a multiple linear relationship between Canadians’ Age, Feelings_life, age_at_first_birth, sex, marital_status, education, income_family, average_hours_worked, self_rated_health, and self_rated_mental_health, adding two more variables age_youngest_child_under_6 and total_children. In addition to the former project [3], a more significant model is built by more complex linear models. Box-Cox transformation, AIC backward elimination are implemented. Results show that some variable (age) is not as significant as others. The final model has a higher $R^2$ compared to former model, making it more significant in predicting life satisfaction feeling.\
+This report continue exploring GSS data to find out if happiness (Feelings_life in GSS) for Canadian relates to their financial situation, education level, family situation(marriage, children), mental & physical health, sex, and ages. The data is the dataset from the 2017 Canadian General Social Survey (Cycle 31, Family) [1]. To continue from a less-than-perfect report [3], further exploration is needed on whether there is a multiple linear relationship between Canadians’ Age, Feelings_life, age_at_first_birth, sex, marital_status, education, income_family, average_hours_worked, self_rated_health, and self_rated_mental_health, adding two more variables age_youngest_child_under_6 and total_children. In addition to the former project [3], a more significant model is built by more complex linear models. Box-Cox transformation [4], AIC backward elimination [5] are implemented. Results show that some variable (age) is not as significant as others. The final model has a higher $R^2$ compared to former model, making it more significant in predicting life satisfaction feeling.\
 
 
 ```{r,echo=FALSE}
@@ -66,7 +69,7 @@ dataSelected <- dataAll %>% select(age,
 attach(dataSelected)
 head(dataSelected, main = "Table 1: all data")
 ```
-Table 1 characterizes the data I use from CES 2017 data set [2]. The first 6 available cases are include to show as examples. There are 12 interesting variables included in the data, and they are age, 
+Table 1 characterizes the data I use from GSS 2017 data set [2]. The first 6 available cases are include to show as examples. There are 12 interesting variables included in the data, and they are age, 
                                    age_at_first_birth, 
                                    feelings_life, 
                                    sex, 
@@ -89,7 +92,7 @@ dataSelected %>%
 MODEL\
 
 For my initial model 1, I run a multiple linear regression through all variables, using feelings_life as the response variable, and age, age_at_first_birth, feelings_life, sex, marital_status, education, income_family, average_hours_worked, self_rated_health, self_rated_mental_health, age_youngest_child_under_6, total_children as the predictors. The p-value for the global F-test is <2.2e-16, and the $R^2 = 0.3187$. This the a rather significant result for such large data set.\
-```{r,echo=FALSE}
+```{r,include=FALSE}
 #Multiple Regression Model
 model1<-lm(feelings_life ~age_at_first_birth 
            +age 
@@ -106,7 +109,7 @@ model1<-lm(feelings_life ~age_at_first_birth
 summary(model1)
 ```
 
-```{r,echo=FALSE}
+```{r,include=FALSE}
 ##Power transformations
 library(alr4)
 trans <- powerTransform(cbind(age_at_first_birth, age, total_children)~1)
@@ -121,8 +124,8 @@ model2 <- lm(feelings_life ~ age_at_first_birth + tage +sex+ average_hours_worke
           age_youngest_child_under_6 + ttotal_children)
 summary(model2)
 ```
-However, I try to improve the model by Box-Cox Transformation. After I transform variables using Box-Cox transformation, I find out the $R^2$ is the same as model 1, but model 2 is more complicated in formula. So the original model 1 is retained.
-I observe the data p-values and find out that although the global F-test is significant for model 1, some individual tests fail. For example, the p-value for self_rated_mental_healthPoor is insignificant while other categories for the same variable is significant. Based on this, I create a new model 3 using AIC elimination to solve this.\
+However, I try to improve the model by Box-Cox Transformation [4]. After I transform variables using Box-Cox transformation, I find out the $R^2$ is the same as model 1, but model 2 is more complicated in formula. So the original model 1 is retained.
+I observe the data p-values and find out that although the global F-test is significant for model 1, some individual tests fail. For example, the p-value for self_rated_mental_healthPoor is insignificant while other categories for the same variable is significant. Based on this, I create a new model 3 using AIC elimination [5] to solve this.\
 
 ```{r, echo=FALSE}
 back1=step(model1, direction = "backward")
@@ -138,7 +141,7 @@ summary(model3)
 \
 After age is deleted from the linear model, Model 3 is the final model. The linear regression of model 3 is $y = \beta_{0} + \beta_{1}x_1 +\beta_{2}x_2 + \beta_{3}x_3 +\beta_{4}x_4 + \beta_{5}x_5 +\beta_{6}x_6 + \beta_{7}x_7 +\beta_{8}x_8 + \beta_{9}x_9 + \beta_{10}x_{10}$,
 where y = feeling_life which is the response variable, $x_1$ - $x_9$ are predictor variables, 
-$x_1$ = age_at_first_birth,  $x_2$ = sex, $x_3$ = average_hours_worked, $x_4$ = marital_status, $x_5$ = education, $x_6$ = income_family, $x_7$ = self_rated_health, $x_8$ = self_rated_mental health, $x_9$ = age_youngest_child_under_6, $x_{10}$ = total_children. The final model 3 has the smallest AIC and the simpliest predictor variable constitutions, for response variable feelings_life.\
+$x_1$ = age_at_first_birth,  $x_2$ = sex, $x_3$ = average_hours_worked, $x_4$ = marital_status, $x_5$ = education, $x_6$ = income_family, $x_7$ = self_rated_health, $x_8$ = self_rated_mental health, $x_9$ = age_youngest_child_under_6, $x_{10}$ = total_children. The final model 3 has the smallest AIC = 628.28 and the simplest predictor variable constitutions, for response variable feelings_life.\
 
 # Results
 
@@ -153,26 +156,27 @@ This means with 1 unit increase in age_at_first_birth, holding other variables c
       0 & \text{if sex is female}
     \end{cases}       
 \end{equation}
-Similarly, the estimated slopes for $\beta_{3}$ to $\beta_{10}$ are illustrated as follows, respectively for average_hours_worked, marital_status, education, income_family, self_rated_health, self_rated_mental_health:\
+Similarly, the estimated slopes for $\beta_{3}$ to $\beta_{10}$ are illustrated as follows, respectively for average_hours_worked, marital_status, education, income_family, self_rated_health, self_rated_mental_health:
+\
 \begin{equation}
   \hat\beta_{3} =
     \begin{cases}
-      \beta_{average_hours_worked0.1 to 29.9 hours} = 1.831046 & \text{if average hours worked is 0.1-29.9 hours}\\
-      \beta_{average_hours_worked30.0 to 40.0 hours} = 1.973047 & \text{if average hours worked is 30-40 hours}\\
-      \beta_{average_hours_worked40.1 to 50.0 hours} = 2.117700  & \text{if average hours worked is 40.1-50 hours}\\
-      \beta_{average_hours_worked50.1 hours and more} = 2.157288 & \text{if average hours worked is 50.1 and more hours}\\
-      \beta_{average_hours_workedDon't know} = 1.343838 & \text{if average hours worked is not known}\\
+      \beta_{\text{average_hours_worked0.1 to 29.9 hours}} = 1.831046 & \text{if average hours worked is 0.1-29.9 hours}\\
+      \beta_{\text{average_hours_worked30.0 to 40.0 hours}}= 1.973047 & \text{if average hours worked is 30-40 hours}\\
+      \beta_{\text{average_hours_worked40.1 to 50.0 hours}}= 2.117700  & \text{if average hours worked is 40.1-50 hours}\\
+      \beta_{\text{average_hours_worked50.1 hours and more}} = 2.157288 & \text{if average hours worked is 50.1 and more hours}\\
+      \beta_{\text{average_hours_workedDon't know}} = 1.343838 & \text{if average hours worked is not known}\\
       0 & \text{if average hours worked is less than 0.1 hours}
     \end{cases}       
 \end{equation}
 \begin{equation}
   \hat\beta_{4} =
     \begin{cases}
-      \beta_{marital_statusLiving common-law} =  -0.545830 & \text{if marital status is having living common-law partner}\\
-      \beta_{marital_statusMarried} = -0.462328 & \text{if marital status is married}\\
-      \beta_{marital_statusSeparated} = -1.177676  & \text{if marital status is separated}\\
-      \beta_{marital_statusSingle, never married} = -1.096904 & \text{if marital status is single and never married}\\
-      \beta_{marital_statusWidowed} = -0.609398  & \text{if marital status is widowed}\\
+      \beta_{\text{marital_statusLiving common-law}} =  -0.545830 & \text{if marital status is having living common-law partner}\\
+      \beta_{\text{marital_statusMarried}} = -0.462328 & \text{if marital status is married}\\
+      \beta_{\text{marital_statusSeparated}} = -1.177676  & \text{if marital status is separated}\\
+      \beta_{\text{marital_statusSingle, never married}} = -1.096904 & \text{if marital status is single and never married}\\
+      \beta_{\text{marital_statusWidowed}} = -0.609398  & \text{if marital status is widowed}\\
       0 & \text{if marital status is other}
     \end{cases}       
 \end{equation}
@@ -180,12 +184,12 @@ Similarly, the estimated slopes for $\beta_{3}$ to $\beta_{10}$ are illustrated 
 \begin{equation}
   \hat\beta_{5} =
     \begin{cases}
-      \beta_{educationCollege, CEGEP or other non-university certificate or diploma} =  0.143529 & \text{if marital status is having living common-law partner}\\
-      \beta_{educationHigh school diploma or a high school equivalency certificate} = 0.193145 & \text{if education level is as stated}\\
-      \beta_{educationLess than high school diploma or its equivalent } = 0.527132  & \text{if education level is as stated}\\
-      \beta_{educationTrade certificate or diploma} = 0.151863  & \text{if education level is as stated}\\
-      \beta_{educationUniversity certificate or diploma below the bachelor's level} = 0.294567 & \text{if education level is as stated}\\
-      \beta_{educationUniversity certificate, diploma or degree above the bachelor} = 0.020526    & \text{if education level is as stated}\\
+      \beta_{\text{educationCollege, CEGEP or other non-university certificate or diploma}} =  0.143529 & \text{if marital status is having living common-law partner}\\
+      \beta_{\text{educationHigh school diploma or a high school equivalency certificate}} = 0.193145 & \text{if education level is as stated}\\
+      \beta_{\text{educationLess than high school diploma or its equivalent }} = 0.527132  & \text{if education level is as stated}\\
+      \beta_{\text{educationTrade certificate or diploma}} = 0.151863  & \text{if education level is as stated}\\
+      \beta_{\text{educationUniversity certificate or diploma below the bachelor's level} } = 0.294567 & \text{if education level is as stated}\\
+      \beta_{\text{educationUniversity certificate, diploma or degree above the bachelor}} = 0.020526    & \text{if education level is as stated}\\
       0 & \text{if education level is other}
     \end{cases}       
 \end{equation}
@@ -193,11 +197,11 @@ Similarly, the estimated slopes for $\beta_{3}$ to $\beta_{10}$ are illustrated 
 \begin{equation}
   \hat\beta_{6} =
     \begin{cases}
-      \beta_{income_family \$125,000 and more} =  0.199942\\
-      \beta_{income_family \$25,000 to \$49,999} = -0.166061\\
-      \beta_{income_family \$50,000 to $74,999} = 0.042703\\
-      \beta_{income_family \$75,000 to \$99,999} = -0.022085\\
-      \beta_{income_familyLess than \$25,000} = -0.106366\\
+      \beta_{\text{income_family \$125,000 and more}} =  0.199942\\
+      \beta_{\text{income_family \$25,000 to \$49,999}} = -0.166061\\
+      \beta_{\text{income_family \$50,000 to \$74,999}} = 0.042703\\
+      \beta_{\text{income_family \$75,000 to \$99,999}} = -0.022085\\
+      \beta_{\text{income_familyLess than \$25,000}} = -0.106366\\
       0 & \text{if other family income is other}
     \end{cases}       
 \end{equation}
@@ -205,11 +209,11 @@ Similarly, the estimated slopes for $\beta_{3}$ to $\beta_{10}$ are illustrated 
 \begin{equation}
   \hat\beta_{7} =
     \begin{cases}
-      \beta_{self_rated_healthExcellent} =  1.050221\\
-      \beta_{self_rated_healthFair} = 0.186045 \\
-      \beta_{self_rated_healthGood} = 0.810536\\
-      \beta_{self_rated_healthPoor} = 0.047775\\
-      \beta_{self_rated_healthVery good} =  0.829585 \\
+      \beta_{\text{self_rated_healthExcellent}} =  1.050221\\
+      \beta_{\text{self_rated_healthFair}} = 0.186045 \\
+      \beta_{\text{self_rated_healthGood}} = 0.810536\\
+      \beta_{\text{self_rated_healthPoor}} = 0.047775\\
+      \beta_{\text{self_rated_healthVery good} }=  0.829585 \\
       0 & \text{if self rated health is other}
     \end{cases}       
 \end{equation}
@@ -217,16 +221,17 @@ Similarly, the estimated slopes for $\beta_{3}$ to $\beta_{10}$ are illustrated 
 \begin{equation}
   \hat\beta_{8} =
     \begin{cases}
-      \beta_{self_rated_mental_healthExcellent } =  4.478973\\
-      \beta_{self_rated_mental_healthFair} = 2.406130  \\
-      \beta_{self_rated_mental_healthGood} = 3.387906 \\
-      \beta_{self_rated_mental_healthPoor} = 0.389899\\
-      \beta_{self_rated_mental_healthVery good} =  4.036514 \\
+      \beta_{\text{self_rated_mental_healthExcellent }} =  4.478973\\
+      \beta_{\text{self_rated_mental_healthFair}} = 2.406130  \\
+      \beta_{\text{self_rated_mental_healthGood}} = 3.387906 \\
+      \beta_{\text{self_rated_mental_healthPoor}} = 0.389899\\
+      \beta_{\text{self_rated_mental_healthVery good}} =  4.036514 \\
       0 & \text{if self rated mental health is other}
     \end{cases}       
 \end{equation}
 And $\hat\beta_{9} =  -0.043339$, which is the estimated slope for age_youngest_child_under_6, with p-value = 0.019520 < 0.05, which is significant. $\hat\beta_{10} =  0.054027$, which is the estimated slope for total_children, with p-value = 0.102176 > 0.05. All slope estimators and corresponding p-values are listed in the table below.\
-
+\
+Table 2: Slope estimates and p-values for predictors\
 ```{r, echo=FALSE}
 table_contents = matrix(c("2.856259", "0.143990",
                           "-0.026223", "0.000113",
@@ -306,30 +311,35 @@ table_9984 <- as.table(table_contents)
 table_9984
 ```
 \
+
 # Discussion
 
-SUMMARY
+SUMMARY\
+Multiple Linear Regression is modeled to the data, and three models are used to find out the correlations between feelings_life and age, age_at_first_birth, sex, marital_status, education, income_family, average_hours_worked, self_rated_health, and self_rated_mental_health, age_youngest_child_under_6 and total_children. My first model is the original multiple linear model for all the variables, and second model is a model using Box-Cox transformation, and the third model is the model obtained by AIC elimination. Model 3 is the best model I get so far. Slope estimates and p-values are presented in Table 2.\
 
-
-CONCLUSIONS
+CONCLUSIONS\
+The multiple linear regression model is significant at 95% confidence level, for the global F-test has F statistics 22.09 on 35 and 1656 degrees of freedom with p-value < 2.2e-16. This means that some predictor variables are significant. Among the 11 variables selected, 10 variables are significant predictors for response variable feelings_life. They are age_at_first_birth, sex, marital_status, education, income_family, average_hours_worked, self_rated_health, and self_rated_mental_health, age_youngest_child_under_6 and total_children. Age is the insignificant variable that is discarded for final model.
+For numerical variables age_at_first_birth, age_youngest_child_under_6 and total_children, p-values are 0.000113, 0.019520, 0.010217, rejecting t-test for testing null hypothesis for slopes. This means the three numeric varibles are significnat predictors for feelings_life. For categorical variables (sex, marital_status, education, income_family, average_hours_worked, self_rated_health, and self_rated_mental_health), there are different p-values for different variables, which is shown in Table 2. By AIC elimination, all categorical variables are significant in predicting response variable feelings_life. \
+In conclusion, by this observational study, there exists multiple linear relationship between one's feeling towards life (response variable), and one's age at giving first birth, sex, marital status, education, family income, time worked in a week, self-rated health condition, self-rated mental health condition, age of youngest child under 6 years old, and total children.\
 
 WEAKNESS & NEXT STEPS\
-
+Examining diagnostic plots, by plotting the residual plot and standard residual plot, points are mostly distributed around the horizontal line of 0, which shows constant variance. Although in standard residual plot, there are curves suggesting trends for errors, it's mostly because that the fitted values are discrete values, which does not account for correlation.  There is good normal trend in normal qqplot, demonstrating the MLR assumption of normality. Cook's distance is also around horizontal line, for the sample data is very large. Also, multiple linear regression model 3 is significant. Therefore, MLR assumptions are not violated.\
 ```{r}
 par(mfrow=c(2,2))
-plot(model3)
+plot(model3, main = "Dianostic plots of final model 3")
 ```
+\
+The weakness of this analysis is that numerical variables are mostly discrete variables, which are not as representative as continuous variables. Another weakness is that categorical variables are hard to visually represented, making it hard to make any graphs from analysis. A disadvantage on the data itself is that the data is observational data instead of causal data. This makes it impossible to draw results that is causal, so the conclusions in this analysis are all on correlations between variables.\
+A future step for the analysis is to do weight least square analysis. Clearly some variables (for example, self_rated_mental_health) are more important than others, so it should be weighted more than others. Weighted Least Square regression model can build better model to predict life feelings.\
 
 # References 
 [1] General Social Survey (GSS), Cycle 31, 2017: Family. Retrieved December 18 2020, from http://www.chass.utoronto.ca
 \
 [2] Multiple Linear Regression. (2020). Retrieved December 18 2020, from http://www.stat.yale.edu/Courses/1997-98/101/linmult.htm
 \
-
-[3] What Makes Canadian Rate Their Feelings of Life. STA304, Winter 2020. Yiwen Feng, Yutong Yuan, Sirui Xu, Man Fei, University of Toronto.\
-
-
-2. 5.3 - The Multiple Linear Regression Model | STAT 462. (2020). Retrieved December 18 2020, from https://online.stat.psu.edu/stat462/node/131/
-3. gss.csv. (2020, December 21) Author :Rohan Alexander and Sam Caetano
-
-4. Multiple Linear Regression. (2020). Retrieved December 18 2020, from http://www.stat.yale.edu/Courses/1997-98/101/linmult.htm
+[3] What Makes Canadian Rate Their Feelings of Life. STA304, Winter 2020. Yiwen Feng, Yutong Yuan, Sirui Xu, Man Fei, University of Toronto.
+\
+[4] Box Cox Transformation. Retrived December 22, 2020 from https://www.statisticshowto.com/box-cox-transformation/
+\
+[5] Variable Selection. 
+Retrieved on December 22, 2020, from http://www.biostat.jhsph.edu/~iruczins/teaching/jf/ch10.pdf

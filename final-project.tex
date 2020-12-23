@@ -1,0 +1,730 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\hypersetup{
+  pdftitle={What makes Canadians rate their life: life feeling rating analysis},
+  pdfauthor={Man Fei, 1002129984},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+\urlstyle{same} % disable monospaced font for URLs
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+
+\title{What makes Canadians rate their life: life feeling rating analysis}
+\author{Man Fei, 1002129984}
+\date{2020/12/21}
+
+\begin{document}
+\maketitle
+
+\hypertarget{abstract}{%
+\subsection{Abstract}\label{abstract}}
+
+It is important to have a good feeling towards one's life. In this
+report, GSS data {[}1{]} is used to find out if happiness
+(Feelings\_life in GSS) for Canadian relates to their financial
+situation, education level, family situation(marriage, children), mental
+\& physical health, and sex. The data is from the 2017 Canadian General
+Social Survey {[}1{]}. Multiple linear relationship between Canadians'
+Feelings\_life, and 10 different predictor variables are the interest
+for this report. To build more complex linear models, powers, logs and
+reciprocal transformation and AIC elimination are used to get a final
+model (model 3). Significance of the model is discussed, and in the next
+steps more methods can be used to get more complete model.
+
+\hypertarget{key-words}{%
+\subsection{Key words}\label{key-words}}
+
+Feeling life, Rating, Observational Study, Multiple Linear Regression,
+Satisfaction
+
+\hypertarget{introduction}{%
+\subsection{Introduction}\label{introduction}}
+
+One's degree of satisfaction towards life is very important for people.
+It is essential because this greatly determines one's happiness and
+fulfillment in life. Satisfaction on life can be affected by many
+things. For example, one's economic standing affect his satisfaction
+towards life. If one spends more time on trying to make more money,
+there is less time foe him to spend time on what he likes. Another
+example could be marital status can affect one's feeling for life.
+Different marital status gives a person different sense of belonging,
+loneliness, or freedom etc, and all these feelings can affect people's
+feeling towards life.\\
+
+Multiple Linear Regression can be a good way to find out the correlation
+between feeling towards life and other aspects in life. It can model
+correlations between more than two variables, which is suitable for this
+circumstance {[}2{]}. Observational data can be put into MLR model to
+find out if there is multiple linear relationship {[}2{]}, and further
+transformations of data can also be done.\\
+
+This report continue exploring GSS data to find out if happiness
+(Feelings\_life in GSS) for Canadian relates to their financial
+situation, education level, family situation(marriage, children), mental
+\& physical health, sex, and ages. The data is the dataset from the 2017
+Canadian General Social Survey (Cycle 31, Family) {[}1{]}. To continue
+from a less-than-perfect report {[}3{]}, further exploration is needed
+on whether there is a multiple linear relationship between Canadians'
+Age, Feelings\_life, age\_at\_first\_birth, sex, marital\_status,
+education, income\_family, average\_hours\_worked, self\_rated\_health,
+and self\_rated\_mental\_health, adding two more variables
+age\_youngest\_child\_under\_6 and total\_children. In addition to the
+former project {[}3{]}, a more significant model is built by more
+complex linear models. Box-Cox transformation {[}4{]}, AIC backward
+elimination {[}5{]} are implemented. Results show that some variable
+(age) is not as significant as others. The final model has a higher
+\(R^2\) compared to former model, making it more significant in
+predicting life satisfaction feeling.\\
+
+\hypertarget{methodology}{%
+\subsection{Methodology}\label{methodology}}
+
+Code and data supporting this analysis is available at:
+``\url{https://github.com/Feymann7/STA304-final-project}''\\
+
+DATA\\
+Table 1: all data\\
+
+\begin{verbatim}
+##    age age_at_first_birth feelings_life    sex        marital_status
+## 1 26.8               18.8            10 Female     Living common-law
+## 2 37.0               35.4             9 Female     Living common-law
+## 3 68.9               32.8            10   Male               Married
+## 4 34.5               32.8             7   Male Single, never married
+## 5 31.5               30.4             9 Female     Living common-law
+## 6 41.4               35.8             7 Female               Married
+##                                                      education
+## 1                                 Trade certificate or diploma
+## 2 University certificate or diploma below the bachelor's level
+## 3                  Bachelor's degree (e.g. B.A., B.Sc., LL.B.)
+## 4                  Bachelor's degree (e.g. B.A., B.Sc., LL.B.)
+## 5                  Bachelor's degree (e.g. B.A., B.Sc., LL.B.)
+## 6  University certificate, diploma or degree above the bach...
+##           income_family average_hours_worked self_rated_health
+## 1    $75,000 to $99,999   30.0 to 40.0 hours         Very good
+## 2 $100,000 to $ 124,999   30.0 to 40.0 hours         Excellent
+## 3 $100,000 to $ 124,999   40.1 to 50.0 hours         Excellent
+## 4    $50,000 to $74,999   30.0 to 40.0 hours              Good
+## 5    $75,000 to $99,999    0.1 to 29.9 hours         Very good
+## 6     $125,000 and more   30.0 to 40.0 hours              Good
+##   self_rated_mental_health age_youngest_child_under_6 total_children
+## 1                Very good                          5              2
+## 2                Excellent                          1              1
+## 3                Excellent                          5              4
+## 4                Very good                          1              1
+## 5                Very good                          1              1
+## 6                Very good                          2              2
+\end{verbatim}
+
+Table 1 characterizes the data I use from GSS 2017 data set {[}2{]}. The
+first 6 available cases are include to show as examples. There are 12
+interesting variables included in the data, and they are age,
+age\_at\_first\_birth, feelings\_life, sex, marital\_status, education,
+income\_family, average\_hours\_worked, self\_rated\_health,
+self\_rated\_mental\_health, age\_youngest\_child\_under\_6,
+total\_children. Five are numeric variables, age, age\_at\_first\_birth,
+feelings\_life, age\_youngest\_child\_under\_6, total\_children. The
+other seven variables are categorical variables. By observing the data
+of those 12 variables, I find that feelings\_life, which is the feeling
+towards life is quite related to the rest of variables. This triggers me
+to find if there is a linear relationship between them. Also, the right
+skewed normal curve of Feeling about life rating histogram below
+demonstrate feelings\_life is not randomly distributedm but might be
+related to other things. I use Multiple Linear Model to try to find a
+model for it.\\
+
+\includegraphics{final-project_files/figure-latex/unnamed-chunk-3-1.pdf}
+
+MODEL\\
+
+For my initial model 1, I run a multiple linear regression through all
+variables, using feelings\_life as the response variable, and age,
+age\_at\_first\_birth, feelings\_life, sex, marital\_status, education,
+income\_family, average\_hours\_worked, self\_rated\_health,
+self\_rated\_mental\_health, age\_youngest\_child\_under\_6,
+total\_children as the predictors. The p-value for the global F-test is
+\textless2.2e-16, and the \(R^2 = 0.3187\). This the a rather
+significant result for such large data set.\\
+
+However, I try to improve the model by Box-Cox Transformation {[}4{]}.
+After I transform variables using Box-Cox transformation, I find out the
+\(R^2\) is the same as model 1, but model 2 is more complicated in
+formula. So the original model 1 is retained. I observe the data
+p-values and find out that although the global F-test is significant for
+model 1, some individual tests fail. For example, the p-value for
+self\_rated\_mental\_healthPoor is insignificant while other categories
+for the same variable is significant. Based on this, I create a new
+model 3 using AIC elimination {[}5{]} to solve this.\\
+
+\begin{verbatim}
+## Start:  AIC=629.36
+## feelings_life ~ age_at_first_birth + age + sex + marital_status + 
+##     average_hours_worked + education + income_family + self_rated_health + 
+##     self_rated_mental_health + age_youngest_child_under_6 + total_children
+## 
+##                              Df Sum of Sq    RSS    AIC
+## - age                         1      1.29 2350.6 628.28
+## - age_at_first_birth          1      2.65 2352.0 629.26
+## <none>                                    2349.3 629.36
+## - age_youngest_child_under_6  1      3.50 2352.8 629.87
+## - total_children              1      4.70 2354.0 630.74
+## - education                   6     19.77 2369.1 631.53
+## - income_family               5     20.71 2370.1 634.21
+## - sex                         1     14.66 2364.0 637.88
+## - average_hours_worked        5     29.37 2378.7 640.37
+## - self_rated_health           5     43.84 2393.2 650.64
+## - marital_status              5     49.66 2399.0 654.74
+## - self_rated_mental_health    5    473.56 2822.9 930.06
+## 
+## Step:  AIC=628.28
+## feelings_life ~ age_at_first_birth + sex + marital_status + average_hours_worked + 
+##     education + income_family + self_rated_health + self_rated_mental_health + 
+##     age_youngest_child_under_6 + total_children
+## 
+##                              Df Sum of Sq    RSS    AIC
+## <none>                                    2350.6 628.28
+## - total_children              1      3.80 2354.4 629.02
+## - education                   6     19.68 2370.3 630.39
+## - age_youngest_child_under_6  1      7.76 2358.4 631.86
+## - income_family               5     20.42 2371.1 632.92
+## - sex                         1     15.40 2366.0 637.33
+## - average_hours_worked        5     29.42 2380.1 639.33
+## - age_at_first_birth          1     21.25 2371.9 641.51
+## - self_rated_health           5     44.11 2394.8 649.74
+## - marital_status              5     50.31 2400.9 654.11
+## - self_rated_mental_health    5    472.37 2823.0 928.12
+\end{verbatim}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = feelings_life ~ age_at_first_birth + sex + average_hours_worked + 
+##     marital_status + education + income_family + self_rated_health + 
+##     self_rated_mental_health + age_youngest_child_under_6 + total_children, 
+##     data = dataSelected)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -6.6118 -0.7385  0.0849  0.8518  3.9298 
+## 
+## Coefficients:
+##                                                                        Estimate
+## (Intercept)                                                            2.856259
+## age_at_first_birth                                                    -0.026223
+## sexMale                                                               -0.219245
+## average_hours_worked0.1 to 29.9 hours                                  1.831046
+## average_hours_worked30.0 to 40.0 hours                                 1.973047
+## average_hours_worked40.1 to 50.0 hours                                 2.117700
+## average_hours_worked50.1 hours and more                                2.157288
+## average_hours_workedDon't know                                         1.343838
+## marital_statusLiving common-law                                       -0.545830
+## marital_statusMarried                                                 -0.462328
+## marital_statusSeparated                                               -1.177676
+## marital_statusSingle, never married                                   -1.096904
+## marital_statusWidowed                                                 -0.609398
+## educationCollege, CEGEP or other non-university certificate or di...   0.143529
+## educationHigh school diploma or a high school equivalency certificate  0.193145
+## educationLess than high school diploma or its equivalent               0.527132
+## educationTrade certificate or diploma                                  0.151863
+## educationUniversity certificate or diploma below the bachelor's level  0.294567
+## educationUniversity certificate, diploma or degree above the bach...   0.020526
+## income_family$125,000 and more                                         0.199942
+## income_family$25,000 to $49,999                                       -0.166061
+## income_family$50,000 to $74,999                                        0.042703
+## income_family$75,000 to $99,999                                       -0.022085
+## income_familyLess than $25,000                                        -0.106366
+## self_rated_healthExcellent                                             1.050221
+## self_rated_healthFair                                                  0.186045
+## self_rated_healthGood                                                  0.810536
+## self_rated_healthPoor                                                  0.047775
+## self_rated_healthVery good                                             0.829585
+## self_rated_mental_healthExcellent                                      4.478973
+## self_rated_mental_healthFair                                           2.406130
+## self_rated_mental_healthGood                                           3.387906
+## self_rated_mental_healthPoor                                           0.389899
+## self_rated_mental_healthVery good                                      4.036514
+## age_youngest_child_under_6                                            -0.043339
+## total_children                                                         0.054027
+##                                                                       Std. Error
+## (Intercept)                                                             1.953951
+## age_at_first_birth                                                      0.006778
+## sexMale                                                                 0.066571
+## average_hours_worked0.1 to 29.9 hours                                   0.859291
+## average_hours_worked30.0 to 40.0 hours                                  0.855295
+## average_hours_worked40.1 to 50.0 hours                                  0.858667
+## average_hours_worked50.1 hours and more                                 0.860932
+## average_hours_workedDon't know                                          0.882083
+## marital_statusLiving common-law                                         0.391256
+## marital_statusMarried                                                   0.386620
+## marital_statusSeparated                                                 0.429936
+## marital_statusSingle, never married                                     0.398346
+## marital_statusWidowed                                                   1.256726
+## educationCollege, CEGEP or other non-university certificate or di...    0.082430
+## educationHigh school diploma or a high school equivalency certificate   0.097109
+## educationLess than high school diploma or its equivalent                0.170299
+## educationTrade certificate or diploma                                   0.116151
+## educationUniversity certificate or diploma below the bachelor's level   0.154403
+## educationUniversity certificate, diploma or degree above the bach...    0.094169
+## income_family$125,000 and more                                          0.088096
+## income_family$25,000 to $49,999                                         0.117633
+## income_family$50,000 to $74,999                                         0.102095
+## income_family$75,000 to $99,999                                         0.098537
+## income_familyLess than $25,000                                          0.175898
+## self_rated_healthExcellent                                              1.198789
+## self_rated_healthFair                                                   1.207094
+## self_rated_healthGood                                                   1.197550
+## self_rated_healthPoor                                                   1.253068
+## self_rated_healthVery good                                              1.197958
+## self_rated_mental_healthExcellent                                       1.203534
+## self_rated_mental_healthFair                                            1.210041
+## self_rated_mental_healthGood                                            1.201952
+## self_rated_mental_healthPoor                                            1.246035
+## self_rated_mental_healthVery good                                       1.202723
+## age_youngest_child_under_6                                              0.018539
+## total_children                                                          0.033038
+##                                                                       t value
+## (Intercept)                                                             1.462
+## age_at_first_birth                                                     -3.869
+## sexMale                                                                -3.293
+## average_hours_worked0.1 to 29.9 hours                                   2.131
+## average_hours_worked30.0 to 40.0 hours                                  2.307
+## average_hours_worked40.1 to 50.0 hours                                  2.466
+## average_hours_worked50.1 hours and more                                 2.506
+## average_hours_workedDon't know                                          1.523
+## marital_statusLiving common-law                                        -1.395
+## marital_statusMarried                                                  -1.196
+## marital_statusSeparated                                                -2.739
+## marital_statusSingle, never married                                    -2.754
+## marital_statusWidowed                                                  -0.485
+## educationCollege, CEGEP or other non-university certificate or di...    1.741
+## educationHigh school diploma or a high school equivalency certificate   1.989
+## educationLess than high school diploma or its equivalent                3.095
+## educationTrade certificate or diploma                                   1.307
+## educationUniversity certificate or diploma below the bachelor's level   1.908
+## educationUniversity certificate, diploma or degree above the bach...    0.218
+## income_family$125,000 and more                                          2.270
+## income_family$25,000 to $49,999                                        -1.412
+## income_family$50,000 to $74,999                                         0.418
+## income_family$75,000 to $99,999                                        -0.224
+## income_familyLess than $25,000                                         -0.605
+## self_rated_healthExcellent                                              0.876
+## self_rated_healthFair                                                   0.154
+## self_rated_healthGood                                                   0.677
+## self_rated_healthPoor                                                   0.038
+## self_rated_healthVery good                                              0.692
+## self_rated_mental_healthExcellent                                       3.722
+## self_rated_mental_healthFair                                            1.988
+## self_rated_mental_healthGood                                            2.819
+## self_rated_mental_healthPoor                                            0.313
+## self_rated_mental_healthVery good                                       3.356
+## age_youngest_child_under_6                                             -2.338
+## total_children                                                          1.635
+##                                                                       Pr(>|t|)
+## (Intercept)                                                           0.143990
+## age_at_first_birth                                                    0.000113
+## sexMale                                                               0.001011
+## average_hours_worked0.1 to 29.9 hours                                 0.033246
+## average_hours_worked30.0 to 40.0 hours                                0.021185
+## average_hours_worked40.1 to 50.0 hours                                0.013754
+## average_hours_worked50.1 hours and more                               0.012314
+## average_hours_workedDon't know                                        0.127829
+## marital_statusLiving common-law                                       0.163181
+## marital_statusMarried                                                 0.231938
+## marital_statusSeparated                                               0.006225
+## marital_statusSingle, never married                                   0.005958
+## marital_statusWidowed                                                 0.627805
+## educationCollege, CEGEP or other non-university certificate or di...  0.081830
+## educationHigh school diploma or a high school equivalency certificate 0.046871
+## educationLess than high school diploma or its equivalent              0.001999
+## educationTrade certificate or diploma                                 0.191237
+## educationUniversity certificate or diploma below the bachelor's level 0.056592
+## educationUniversity certificate, diploma or degree above the bach...  0.827479
+## income_family$125,000 and more                                        0.023360
+## income_family$25,000 to $49,999                                       0.158230
+## income_family$50,000 to $74,999                                       0.675807
+## income_family$75,000 to $99,999                                       0.822683
+## income_familyLess than $25,000                                        0.545458
+## self_rated_healthExcellent                                            0.381120
+## self_rated_healthFair                                                 0.877529
+## self_rated_healthGood                                                 0.498609
+## self_rated_healthPoor                                                 0.969592
+## self_rated_healthVery good                                            0.488721
+## self_rated_mental_healthExcellent                                     0.000205
+## self_rated_mental_healthFair                                          0.046924
+## self_rated_mental_healthGood                                          0.004880
+## self_rated_mental_healthPoor                                          0.754387
+## self_rated_mental_healthVery good                                     0.000808
+## age_youngest_child_under_6                                            0.019520
+## total_children                                                        0.102176
+##                                                                          
+## (Intercept)                                                              
+## age_at_first_birth                                                    ***
+## sexMale                                                               ** 
+## average_hours_worked0.1 to 29.9 hours                                 *  
+## average_hours_worked30.0 to 40.0 hours                                *  
+## average_hours_worked40.1 to 50.0 hours                                *  
+## average_hours_worked50.1 hours and more                               *  
+## average_hours_workedDon't know                                           
+## marital_statusLiving common-law                                          
+## marital_statusMarried                                                    
+## marital_statusSeparated                                               ** 
+## marital_statusSingle, never married                                   ** 
+## marital_statusWidowed                                                    
+## educationCollege, CEGEP or other non-university certificate or di...  .  
+## educationHigh school diploma or a high school equivalency certificate *  
+## educationLess than high school diploma or its equivalent              ** 
+## educationTrade certificate or diploma                                    
+## educationUniversity certificate or diploma below the bachelor's level .  
+## educationUniversity certificate, diploma or degree above the bach...     
+## income_family$125,000 and more                                        *  
+## income_family$25,000 to $49,999                                          
+## income_family$50,000 to $74,999                                          
+## income_family$75,000 to $99,999                                          
+## income_familyLess than $25,000                                           
+## self_rated_healthExcellent                                               
+## self_rated_healthFair                                                    
+## self_rated_healthGood                                                    
+## self_rated_healthPoor                                                    
+## self_rated_healthVery good                                               
+## self_rated_mental_healthExcellent                                     ***
+## self_rated_mental_healthFair                                          *  
+## self_rated_mental_healthGood                                          ** 
+## self_rated_mental_healthPoor                                             
+## self_rated_mental_healthVery good                                     ***
+## age_youngest_child_under_6                                            *  
+## total_children                                                           
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 1.191 on 1656 degrees of freedom
+## Multiple R-squared:  0.3183, Adjusted R-squared:  0.3039 
+## F-statistic: 22.09 on 35 and 1656 DF,  p-value: < 2.2e-16
+\end{verbatim}
+
+After age is deleted from the linear model, Model 3 is the final model.
+The linear regression of model 3 is
+\(y = \beta_{0} + \beta_{1}x_1 +\beta_{2}x_2 + \beta_{3}x_3 +\beta_{4}x_4 + \beta_{5}x_5 +\beta_{6}x_6 + \beta_{7}x_7 +\beta_{8}x_8 + \beta_{9}x_9 + \beta_{10}x_{10}\),
+where y = feeling\_life which is the response variable, \(x_1\) -
+\(x_9\) are predictor variables, \(x_1\) = age\_at\_first\_birth,
+\(x_2\) = sex, \(x_3\) = average\_hours\_worked, \(x_4\) =
+marital\_status, \(x_5\) = education, \(x_6\) = income\_family, \(x_7\)
+= self\_rated\_health, \(x_8\) = self\_rated\_mental health, \(x_9\) =
+age\_youngest\_child\_under\_6, \(x_{10}\) = total\_children. The final
+model 3 has the smallest AIC = 628.28 and the simplest predictor
+variable constitutions, for response variable feelings\_life.\\
+
+\hypertarget{results}{%
+\section{Results}\label{results}}
+
+The final model has intercept and estimated slopes as shown in the
+following table. The model
+\(y = \beta_{0} + \beta_{1}x_1 +\beta_{2}x_2 + \beta_{3}x_3 +\beta_{4}x_4 + \beta_{5}x_5 +\beta_{6}x_6 + \beta_{7}x_7 +\beta_{8}x_8 + \beta_{9}x_9 + \beta_{10}x_{10}\).
+\(\hat\beta_{0} = 2.856259\), this is our intercept, with p-value
+0.143990. Variable age\_at\_first\_birth has slope estimate
+\(\hat\beta_{1} =-0.026223\), with p-value = 0.000113. This means with 1
+unit increase in age\_at\_first\_birth, holding other variables
+constant, feeling\_life is expected to decrease 0.026223. Categorical
+variable \(\beta_2\) has slope estimate \(\beta_{sexMale}\) = -0.219246.
+This means when sex is female, this term is 0, while when sex is male,
+the slope estimate is -0.219246. And the p-value is 0.001011\textless{}
+0.05, which is significant. \begin{equation}
+  \hat\beta_{2} =
+    \begin{cases}
+      \beta_{sexMale} = -0.219246 & \text{if sex is male}\\
+      0 & \text{if sex is female}
+    \end{cases}       
+\end{equation} Similarly, the estimated slopes for \(\beta_{3}\) to
+\(\beta_{10}\) are illustrated as follows, respectively for
+average\_hours\_worked, marital\_status, education, income\_family,
+self\_rated\_health, self\_rated\_mental\_health:\\
+\begin{equation}
+  \hat\beta_{3} =
+    \begin{cases}
+      \beta_{\text{average_hours_worked0.1 to 29.9 hours}} = 1.831046 & \text{if average hours worked is 0.1-29.9 hours}\\
+      \beta_{\text{average_hours_worked30.0 to 40.0 hours}}= 1.973047 & \text{if average hours worked is 30-40 hours}\\
+      \beta_{\text{average_hours_worked40.1 to 50.0 hours}}= 2.117700  & \text{if average hours worked is 40.1-50 hours}\\
+      \beta_{\text{average_hours_worked50.1 hours and more}} = 2.157288 & \text{if average hours worked is 50.1 and more hours}\\
+      \beta_{\text{average_hours_workedDon't know}} = 1.343838 & \text{if average hours worked is not known}\\
+      0 & \text{if average hours worked is less than 0.1 hours}
+    \end{cases}       
+\end{equation} \begin{equation}
+  \hat\beta_{4} =
+    \begin{cases}
+      \beta_{\text{marital_statusLiving common-law}} =  -0.545830 & \text{if marital status is having living common-law partner}\\
+      \beta_{\text{marital_statusMarried}} = -0.462328 & \text{if marital status is married}\\
+      \beta_{\text{marital_statusSeparated}} = -1.177676  & \text{if marital status is separated}\\
+      \beta_{\text{marital_statusSingle, never married}} = -1.096904 & \text{if marital status is single and never married}\\
+      \beta_{\text{marital_statusWidowed}} = -0.609398  & \text{if marital status is widowed}\\
+      0 & \text{if marital status is other}
+    \end{cases}       
+\end{equation}
+
+\begin{equation}
+  \hat\beta_{5} =
+    \begin{cases}
+      \beta_{\text{educationCollege, CEGEP or other non-university certificate or diploma}} =  0.143529 & \text{if marital status is having living common-law partner}\\
+      \beta_{\text{educationHigh school diploma or a high school equivalency certificate}} = 0.193145 & \text{if education level is as stated}\\
+      \beta_{\text{educationLess than high school diploma or its equivalent }} = 0.527132  & \text{if education level is as stated}\\
+      \beta_{\text{educationTrade certificate or diploma}} = 0.151863  & \text{if education level is as stated}\\
+      \beta_{\text{educationUniversity certificate or diploma below the bachelor's level} } = 0.294567 & \text{if education level is as stated}\\
+      \beta_{\text{educationUniversity certificate, diploma or degree above the bachelor}} = 0.020526    & \text{if education level is as stated}\\
+      0 & \text{if education level is other}
+    \end{cases}       
+\end{equation}
+
+\begin{equation}
+  \hat\beta_{6} =
+    \begin{cases}
+      \beta_{\text{income_family \$125,000 and more}} =  0.199942\\
+      \beta_{\text{income_family \$25,000 to \$49,999}} = -0.166061\\
+      \beta_{\text{income_family \$50,000 to \$74,999}} = 0.042703\\
+      \beta_{\text{income_family \$75,000 to \$99,999}} = -0.022085\\
+      \beta_{\text{income_familyLess than \$25,000}} = -0.106366\\
+      0 & \text{if other family income is other}
+    \end{cases}       
+\end{equation}
+
+\begin{equation}
+  \hat\beta_{7} =
+    \begin{cases}
+      \beta_{\text{self_rated_healthExcellent}} =  1.050221\\
+      \beta_{\text{self_rated_healthFair}} = 0.186045 \\
+      \beta_{\text{self_rated_healthGood}} = 0.810536\\
+      \beta_{\text{self_rated_healthPoor}} = 0.047775\\
+      \beta_{\text{self_rated_healthVery good} }=  0.829585 \\
+      0 & \text{if self rated health is other}
+    \end{cases}       
+\end{equation}
+
+\begin{equation}
+  \hat\beta_{8} =
+    \begin{cases}
+      \beta_{\text{self_rated_mental_healthExcellent }} =  4.478973\\
+      \beta_{\text{self_rated_mental_healthFair}} = 2.406130  \\
+      \beta_{\text{self_rated_mental_healthGood}} = 3.387906 \\
+      \beta_{\text{self_rated_mental_healthPoor}} = 0.389899\\
+      \beta_{\text{self_rated_mental_healthVery good}} =  4.036514 \\
+      0 & \text{if self rated mental health is other}
+    \end{cases}       
+\end{equation} And \(\hat\beta_{9} = -0.043339\), which is the estimated
+slope for age\_youngest\_child\_under\_6, with p-value = 0.019520
+\textless{} 0.05, which is significant. \(\hat\beta_{10} = 0.054027\),
+which is the estimated slope for total\_children, with p-value =
+0.102176 \textgreater{} 0.05. All slope estimators and corresponding
+p-values are listed in the table below.\\
+~\\
+Table 2: Slope estimates and p-values for predictors\\
+
+\begin{verbatim}
+##                                                                        estimated regression coefficient
+## Intercept                                                              2.856259                        
+## age_at_first_birth                                                     -0.026223                       
+## sexMale                                                                -0.219246                       
+## average_hours_worked0.1 to 29.9 hours                                  1.831046                        
+## average_hours_worked30.0 to 40.0 hours                                 1.973047                        
+## average_hours_worked40.1 to 50.0 hours                                 2.117700                        
+## average_hours_worked50.1 hours and more                                2.157288                        
+## average_hours_workedDon't know                                         1.343838                        
+## marital_statusLiving common-law                                        -0.545830                       
+## marital_statusMarried                                                  -0.462328                       
+## marital_statusSeparated                                                -1.177676                       
+## marital_statusSingle, never married                                    -1.096904                       
+## marital_statusWidowed                                                  -0.609398                       
+## educationCollege, CEGEP or other non-university certificate or diploma 0.143529                        
+## educationHigh school diploma or a high school equivalency certificate  0.193145                        
+## educationLess than high school diploma or its equivalent               0.527132                        
+## educationTrade certificate or diploma                                  0.151863                        
+## educationUniversity certificate or diploma below the bachelor's level  0.294567                        
+## educationUniversity certificate, diploma or degree above the bachelor  0.020526                        
+## income_family$125,000 and more                                         0.199942                        
+## income_family$25,000 to $49,999                                        -0.166061                       
+## income_family$50,000 to $74,999                                        0.042703                        
+## income_family$75,000 to $99,999                                        -0.022085                       
+## income_familyLess than $25,000                                         -0.106366                       
+## self_rated_healthExcellent                                             1.050221                        
+## self_rated_healthFair                                                  0.186045                        
+## self_rated_healthGood                                                  0.810536                        
+## self_rated_healthPoor                                                  0.047775                        
+## self_rated_healthVery good                                             0.829585                        
+## self_rated_mental_healthExcellent                                      4.478973                        
+## self_rated_mental_healthFair                                           2.406130                        
+## self_rated_mental_healthGood                                           3.387906                        
+## self_rated_mental_healthPoor                                           0.389899                        
+## self_rated_mental_healthVery good                                      4.036514                        
+## age_youngest_child_under_6                                             -0.043339                       
+## total_children                                                         0.054027                        
+##                                                                        p-value 
+## Intercept                                                              0.143990
+## age_at_first_birth                                                     0.000113
+## sexMale                                                                0.001011
+## average_hours_worked0.1 to 29.9 hours                                  0.033246
+## average_hours_worked30.0 to 40.0 hours                                 0.021185
+## average_hours_worked40.1 to 50.0 hours                                 0.013754
+## average_hours_worked50.1 hours and more                                0.012314
+## average_hours_workedDon't know                                         0.127829
+## marital_statusLiving common-law                                        0.163181
+## marital_statusMarried                                                  0.231938
+## marital_statusSeparated                                                0.006225
+## marital_statusSingle, never married                                    0.005958
+## marital_statusWidowed                                                  0.627805
+## educationCollege, CEGEP or other non-university certificate or diploma 0.081830
+## educationHigh school diploma or a high school equivalency certificate  0.046871
+## educationLess than high school diploma or its equivalent               0.001999
+## educationTrade certificate or diploma                                  0.191237
+## educationUniversity certificate or diploma below the bachelor's level  0.056592
+## educationUniversity certificate, diploma or degree above the bachelor  0.827479
+## income_family$125,000 and more                                         0.023360
+## income_family$25,000 to $49,999                                        0.158230
+## income_family$50,000 to $74,999                                        0.675807
+## income_family$75,000 to $99,999                                        0.822683
+## income_familyLess than $25,000                                         0.545458
+## self_rated_healthExcellent                                             0.381120
+## self_rated_healthFair                                                  0.877529
+## self_rated_healthGood                                                  0.498609
+## self_rated_healthPoor                                                  0.969592
+## self_rated_healthVery good                                             0.488721
+## self_rated_mental_healthExcellent                                      0.000205
+## self_rated_mental_healthFair                                           0.046924
+## self_rated_mental_healthGood                                           0.004880
+## self_rated_mental_healthPoor                                           0.754387
+## self_rated_mental_healthVery good                                      0.000808
+## age_youngest_child_under_6                                             0.019520
+## total_children                                                         0.102176
+\end{verbatim}
+
+\hypertarget{discussion}{%
+\section{Discussion}\label{discussion}}
+
+SUMMARY\\
+Multiple Linear Regression is modeled to the data, and three models are
+used to find out the correlations between feelings\_life and age,
+age\_at\_first\_birth, sex, marital\_status, education, income\_family,
+average\_hours\_worked, self\_rated\_health, and
+self\_rated\_mental\_health, age\_youngest\_child\_under\_6 and
+total\_children. My first model is the original multiple linear model
+for all the variables, and second model is a model using Box-Cox
+transformation, and the third model is the model obtained by AIC
+elimination. Model 3 is the best model I get so far. Slope estimates and
+p-values are presented in Table 2.\\
+
+CONCLUSIONS\\
+The multiple linear regression model is significant at 95\% confidence
+level, for the global F-test has F statistics 22.09 on 35 and 1656
+degrees of freedom with p-value \textless{} 2.2e-16. This means that
+some predictor variables are significant. Among the 11 variables
+selected, 10 variables are significant predictors for response variable
+feelings\_life. They are age\_at\_first\_birth, sex, marital\_status,
+education, income\_family, average\_hours\_worked, self\_rated\_health,
+and self\_rated\_mental\_health, age\_youngest\_child\_under\_6 and
+total\_children. Age is the insignificant variable that is discarded for
+final model. For numerical variables age\_at\_first\_birth,
+age\_youngest\_child\_under\_6 and total\_children, p-values are
+0.000113, 0.019520, 0.010217, rejecting t-test for testing null
+hypothesis for slopes. This means the three numeric varibles are
+significnat predictors for feelings\_life. For categorical variables
+(sex, marital\_status, education, income\_family,
+average\_hours\_worked, self\_rated\_health, and
+self\_rated\_mental\_health), there are different p-values for different
+variables, which is shown in Table 2. By AIC elimination, all
+categorical variables are significant in predicting response variable
+feelings\_life.\\
+In conclusion, by this observational study, there exists multiple linear
+relationship between one's feeling towards life (response variable), and
+one's age at giving first birth, sex, marital status, education, family
+income, time worked in a week, self-rated health condition, self-rated
+mental health condition, age of youngest child under 6 years old, and
+total children.\\
+
+WEAKNESS \& NEXT STEPS\\
+Examining diagnostic plots, by plotting the residual plot and standard
+residual plot, points are mostly distributed around the horizontal line
+of 0, which shows constant variance. Although in standard residual plot,
+there are curves suggesting trends for errors, it's mostly because that
+the fitted values are discrete values, which does not account for
+correlation. There is good normal trend in normal qqplot, demonstrating
+the MLR assumption of normality. Cook's distance is also around
+horizontal line, for the sample data is very large. Also, multiple
+linear regression model 3 is significant. Therefore, MLR assumptions are
+not violated.\\
+\includegraphics{final-project_files/figure-latex/unnamed-chunk-9-1.pdf}\\
+The weakness of this analysis is that numerical variables are mostly
+discrete variables, which are not as representative as continuous
+variables. Another weakness is that categorical variables are hard to
+visually represented, making it hard to make any graphs from analysis. A
+disadvantage on the data itself is that the data is observational data
+instead of causal data. This makes it impossible to draw results that is
+causal, so the conclusions in this analysis are all on correlations
+between variables.\\
+A future step for the analysis is to do weight least square analysis.
+Clearly some variables (for example, self\_rated\_mental\_health) are
+more important than others, so it should be weighted more than others.
+Weighted Least Square regression model can build better model to predict
+life feelings.\\
+
+\hypertarget{references}{%
+\section{References}\label{references}}
+
+{[}1{]} General Social Survey (GSS), Cycle 31, 2017: Family. Retrieved
+December 18 2020, from \url{http://www.chass.utoronto.ca}\\
+{[}2{]} Multiple Linear Regression. (2020). Retrieved December 18 2020,
+from \url{http://www.stat.yale.edu/Courses/1997-98/101/linmult.htm}\\
+{[}3{]} What Makes Canadian Rate Their Feelings of Life. STA304, Winter
+2020. Yiwen Feng, Yutong Yuan, Sirui Xu, Man Fei, University of
+Toronto.\\
+{[}4{]} Box Cox Transformation. Retrived December 22, 2020 from
+\url{https://www.statisticshowto.com/box-cox-transformation/}\\
+{[}5{]} Variable Selection. Retrieved on December 22, 2020, from
+\url{http://www.biostat.jhsph.edu/~iruczins/teaching/jf/ch10.pdf}
+
+\end{document}
